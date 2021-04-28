@@ -3,11 +3,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include "result.h"
 #define EMP_RESULT (result){0,0}
-typedef struct result{
-    bool m;
-    size_t l;//up to and until l
-}result;
 result matchchar(char a,const char b){
     if (tolower(a)==tolower(b)){
         return (result){1,1};
@@ -23,7 +20,7 @@ result matcharr(char a,const char*s){
     if (s==NULL||strlen(s)==0)
         return EMP_RESULT;
     for (size_t i=0;i<strlen(s);i++)
-        if (matchchar(a,s[i]))
+        if (matchchar(a,s[i]).m)
             return (result){1,1};
     return EMP_RESULT;
 }
@@ -34,6 +31,14 @@ result ALPHA(char c){
 }
 result DIGIT(char c){
     return matchrange(c,'1','9');
+}
+result HEXDIG(char c){
+    if ((DIGIT(c).m||matcharr(c,"ABCDEF").m))
+        goto found;
+not:
+    return EMP_RESULT;
+found:
+    return (result){1,1};
 }
 /*result HEXDIG(char c){
     return (result){0,0};
